@@ -1,0 +1,323 @@
+<p-toast></p-toast>
+
+<div class="card">
+  <p-toolbar styleClass="p-mb-4">
+    <ng-template pTemplate="left">
+      <button pButton pRipple label="New" icon="pi pi-plus" class="p-button-success p-mr-2"
+        (click)="openNew()"></button>
+    </ng-template>
+  </p-toolbar>
+
+  <p-table #dt [value]="products" [columns]="tableColumn" [rows]="10" [paginator]="true" [responsive]="true"
+    responsiveLayout="scroll" [globalFilterFields]="['name','country.name','representative.name','status']"
+    [(selection)]="selectedProducts" [rowHover]="true" dataKey="id"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [showCurrentPageReport]="true">
+    <ng-template pTemplate="header">
+      <tr>
+        <ng-container *ngFor="let column of tableColumn">
+          <th *ngIf="column!=='id' && column!=='Action'" [pSortableColumn]="column">{{column}}<p-sortIcon
+              [field]="column">
+            </p-sortIcon>
+          </th>
+          <th *ngIf="column==='Action'">{{column}}
+          </th>
+        </ng-container>
+        <!-- <th>Action</th> -->
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-product let-columns="columns">
+      <tr>
+        <ng-container *ngFor="let col of columns">
+          <td *ngIf="col!=='id' && col!=='Action'">
+            {{product[col]}}
+          </td>
+          <td *ngIf="col==='Action'">
+            <button pButton pRipple icon=" pi pi-pencil" class="p-button-rounded p-button-success p-mr-2"></button>
+            <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning"></button>
+          </td>
+        </ng-container>
+
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="summary">
+      <div class="p-d-flex p-ai-center p-jc-between">
+        In total there are {{products ? products.length : 0 }} products.
+      </div>
+    </ng-template>
+  </p-table>
+</div>
+
+<p-dialog [(visible)]="productDialog" [style]="{width: '100%'}" header="Product Details" [modal]="true"
+  styleClass="p-fluid">
+
+  <ng-template pTemplate="content">
+    <form [formGroup]="inventoryForm" (ngSubmit)="saveProduct()">
+      <div class="formgrid grid">
+        <div class="field col-3">
+          <label for="Category">Process <span> *</span></label>
+          <p-dropdown class="category_Dropdown" [options]="processOption" placeholder="Select Process"
+            formControlName="process"> </p-dropdown>
+          <div class="error">
+            <small id="username-help" class="p-error"
+              *ngIf="inventoryForm.get('process').hasError('required') && inventoryForm.get('process').touched">Process
+              is required</small>
+          </div>
+        </div>
+        <div class="field col-3">
+          <label for="Grade">Grade <span> *</span></label>
+          <p-dropdown class="Grade_Dropdown" [options]="gradeOption" placeholder="Select Grade" formControlName="grade">
+          </p-dropdown>
+          <div class="error">
+            <small id="username-help" class="p-error"
+              *ngIf="inventoryForm.get('grade').hasError('required') && inventoryForm.get('grade').touched">grade
+              is required</small>
+          </div>
+        </div>
+        <div class="field col-3">
+          <label for="Form">Form <span> *</span></label>
+          <p-dropdown class="Form_Dropdown" [options]="formOption" placeholder="Select Form" formControlName="form">
+          </p-dropdown>
+          <div class="error">
+            <small id="username-help" class="p-error"
+              *ngIf="inventoryForm.get('form').hasError('required') && inventoryForm.get('form').touched">form
+              is required</small>
+          </div>
+        </div>
+        <div class="field col-3">
+          <label for="ProductCategory">Product Category <span> *</span></label>
+          <p-dropdown class="ProductCategory_Dropdown" [options]="productCategoryOption"
+            placeholder="Select ProductCategory" formControlName="pcategory">
+          </p-dropdown>
+          <div class="error">
+            <small id="username-help" class="p-error"
+              *ngIf="inventoryForm.get('pcategory').hasError('required') && inventoryForm.get('pcategory').touched">pcategory
+              is required</small>
+          </div>
+        </div>
+        <div class="field col-3">
+          <label for="name">Product Name <span> *</span></label>
+          <input type="text" pInputText id="name" formControlName="productName" />
+          <div class="error">
+            <small id="username-help" class="p-error"
+              *ngIf="inventoryForm.get('productName').hasError('required') && inventoryForm.get('productName').touched">product
+              Name
+              is required</small>
+          </div>
+        </div>
+        <div class="field col-3">
+          <label for="name">Product Code</label>
+          <input type="text" pInputText id="name" formControlName="productCode" />
+          <div class="error">
+            <small id="username-help" class="p-error"
+              *ngIf="inventoryForm.get('productCode').hasError('required') && inventoryForm.get('productCode').touched">productCode
+              is required</small>
+          </div>
+        </div>
+        <div class="field col-3">
+          <label for="name">Description</label>
+          <input type="text" pInputText id="name" formControlName="description" />
+          <div class="error">
+            <small id="username-help" class="p-error"
+              *ngIf="inventoryForm.get('description').hasError('required') && inventoryForm.get('description').touched">description
+              is required</small>
+          </div>
+        </div>
+        <div class="field col-3">
+          <label for="name">product Picture</label>
+          <input type="file" pInputText placeholder="Image Upload" formControlName="productPicture">
+          <div class="error">
+            <small id="username-help" class="p-error"
+              *ngIf="inventoryForm.get('productPicture').hasError('required') && inventoryForm.get('productPicture').touched">productPicture
+              is required</small>
+          </div>
+        </div>
+        <div class="field col-3">
+          <label for="name">Documents</label>
+          <input type="text" pInputText id="name" formControlName="documents" />
+          <div class="error">
+            <small id="username-help" class="p-error"
+              *ngIf="inventoryForm.get('documents').hasError('required') && inventoryForm.get('documents').touched">documents
+              is required</small>
+          </div>
+        </div>
+        <div class="field col-3">
+          <label for="name">Shelf Life</label>
+          <input type="text" pInputText id="name" formControlName="shelfLife" />
+          <div class="error">
+            <small id="username-help" class="p-error"
+              *ngIf="inventoryForm.get('shelfLife').hasError('required') && inventoryForm.get('shelfLife').touched">shelfLife
+              is required</small>
+          </div>
+        </div>
+        <div class="field col-3">
+          <label for="name">Quantity Available</label>
+          <input type="text" pInputText id="name" formControlName="quantityavailable" />
+          <div class="error">
+            <small id="username-help" class="p-error"
+              *ngIf="inventoryForm.get('quantityavailable').hasError('required') && inventoryForm.get('quantityavailable').touched">quantityavailable
+              is required</small>
+          </div>
+        </div>
+        <div class="field col-3">
+          <label for="name">Locations</label>
+          <input type="text" pInputText id="name" formControlName="locations" />
+          <div class="error">
+            <small id="username-help" class="p-error"
+              *ngIf="inventoryForm.get('locations').hasError('required') && inventoryForm.get('locations').touched">locations
+              is required</small>
+          </div>
+        </div>
+        <div class="field col-3">
+          <label for="name">Product-Colour</label>
+          <input type="text" pInputText id="name" formControlName="productColour" />
+          <div class="error">
+            <small id="username-help" class="p-error"
+              *ngIf="inventoryForm.get('productColour').hasError('required') && inventoryForm.get('productColour').touched">productColour
+              is required</small>
+          </div>
+        </div>
+        <div class="field col-3">
+          <label for="name">Botanical-Name</label>
+          <input type="text" pInputText id="name" formControlName="botanicalName" />
+          <div class="error">
+            <small id="username-help" class="p-error"
+              *ngIf="inventoryForm.get('botanicalName').hasError('required') && inventoryForm.get('botanicalName').touched">botanicalName
+              is required</small>
+          </div>
+        </div>
+        <div class="field col-3">
+          <label for="name">Plant-PartUsed</label>
+          <input type="text" pInputText id="name" formControlName="plantPartUsed" />
+          <div class="error">
+            <small id="username-help" class="p-error"
+              *ngIf="inventoryForm.get('plantPartUsed').hasError('required') && inventoryForm.get('plantPartUsed').touched">plantPartUsed
+              is required</small>
+          </div>
+        </div>
+        <div class="field col-3">
+          <label for="name">Product-Type</label>
+          <input type="text" pInputText id="name" formControlName="productType" />
+          <div class="error">
+            <small id="username-help" class="p-error"
+              *ngIf="inventoryForm.get('productType').hasError('required') && inventoryForm.get('productType').touched">productType
+              is required</small>
+          </div>
+        </div>
+        <div class="field col-3">
+          <label for="name">Packaging-Type</label>
+          <input type="text" pInputText id="name" formControlName="packagingType" />
+          <div class="error">
+            <small id="username-help" class="p-error"
+              *ngIf="inventoryForm.get('packagingType').hasError('required') && inventoryForm.get('packagingType').touched">packagingType
+              is required</small>
+          </div>
+        </div>
+        <div class="field col-3">
+          <label for="name">Solubility</label>
+          <input type="text" pInputText id="name" formControlName="solubility" />
+          <div class="error">
+            <small id="username-help" class="p-error"
+              *ngIf="inventoryForm.get('solubility').hasError('required') && inventoryForm.get('solubility').touched">Solubility
+              is required</small>
+          </div>
+        </div>
+        <div class="field col-3">
+          <label for="name">HS-Code</label>
+          <input type="text" pInputText id="name" formControlName="HSCode" />
+          <div class="error">
+            <small id="username-help" class="p-error"
+              *ngIf="inventoryForm.get('HSCode').hasError('required') && inventoryForm.get('HSCode').touched">HSCode
+              is required</small>
+          </div>
+        </div>
+        <div class="field col-3">
+          <label for="name">CASNumber</label>
+          <input type="text" pInputText id="name" formControlName="CASNumber" />
+          <div class="error">
+            <small id="username-help" class="p-error"
+              *ngIf="inventoryForm.get('CASNumber').hasError('required') && inventoryForm.get('CASNumber').touched">CASNumber
+              is required</small>
+          </div>
+        </div>
+        <div class="field col-3">
+          <label for="name">Country of Origin</label>
+          <input type="text" pInputText id="name" formControlName="countryofOrigin" />
+          <div class="error">
+            <small id="username-help" class="p-error"
+              *ngIf="inventoryForm.get('countryofOrigin').hasError('required') && inventoryForm.get('countryofOrigin').touched">countryofOrigin
+              is required</small>
+          </div>
+        </div>
+        <div class="field col-3">
+          <label for="name">Added Additives Orpreservatives</label>
+          <input type="text" pInputText id="name" formControlName="addedAdditivesOrpreservatives" />
+          <div class="error">
+            <small id="username-help" class="p-error"
+              *ngIf="inventoryForm.get('addedAdditivesOrpreservatives').hasError('required') && inventoryForm.get('addedAdditivesOrpreservatives').touched">Added
+              Additives Orpreservatives
+              is required</small>
+          </div>
+        </div>
+        <div class="field col-3">
+          <label for="name">Reference-Standard</label>
+          <input type="text" pInputText id="name" formControlName="referenceStandard" />
+          <div class="error">
+            <small id="username-help" class="p-error"
+              *ngIf="inventoryForm.get('referenceStandard').hasError('required') && inventoryForm.get('referenceStandard').touched">referenceStandard
+              is required</small>
+          </div>
+        </div>
+        <div class="field col-3">
+          <label for="name">
+            StorageCondition</label>
+          <input type="text" pInputText id="name" formControlName="storageCondition" />
+          <div class="error">
+            <small id="username-help" class="p-error"
+              *ngIf="inventoryForm.get('storageCondition').hasError('required') && inventoryForm.get('storageCondition').touched">storageCondition
+              is required</small>
+          </div>
+        </div>
+        <div class="field col-3">
+          <label for="name">
+            bag-Size</label>
+          <input type="text" pInputText id="name" formControlName="bagSize" />
+          <div class="error">
+            <small id="username-help" class="p-error"
+              *ngIf="inventoryForm.get('bagSize').hasError('required') && inventoryForm.get('bagSize').touched">bagSize
+              is required</small>
+          </div>
+        </div>
+        <div class="field col-3">
+          <label for="name">
+            productEndUses</label>
+          <input type="text" pInputText id="name" formControlName="productEndUses" />
+          <div class="error">
+            <small id="username-help" class="p-error"
+              *ngIf="inventoryForm.get('productEndUses').hasError('required') && inventoryForm.get('productEndUses').touched">productEndUses
+              is required</small>
+          </div>
+        </div>
+        <div class="field col-3">
+          <label for="name">
+            benefits</label>
+          <input type="text" pInputText id="name" formControlName="benefits" />
+          <div class="error">
+            <small id="username-help" class="p-error"
+              *ngIf="inventoryForm.get('benefits').hasError('required') && inventoryForm.get('benefits').touched">benefits
+              is required</small>
+          </div>
+        </div>
+
+      </div>
+      <div class="row col-12"
+        style="display: inline-flex; flex-direction: end; justify-content: flex-end; margin-right: 5px;">
+        <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-secondary p-button-text"
+          style="width: 150px;" (click)="hideDialog()"></button>
+        <button pButton pRipple type="submit" label="Save" icon="pi pi-check" class="p-button-info p-button-text"
+          style="width: 150px;" [disabled]="!inventoryForm.valid"></button>
+      </div>
+    </form>
+  </ng-template>
+</p-dialog>
+
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
